@@ -14,11 +14,12 @@ public class Crypto {
     private Double profit;
     private Double profitPercentage;
     private Double totalValue;
+    private Double bankingFee;
 
     public Crypto() {
     }
 
-    public Crypto(Long id, String name, LocalDate date, Double depositOrWithdrawValue, Double currentValue, Double quantity, Double profit, Double profitPercentage, Double totalValue) {
+    public Crypto(Long id, String name, LocalDate date, Double depositOrWithdrawValue, Double currentValue, Double quantity, Double profit, Double profitPercentage, Double totalValue, Double bankingFee) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -28,6 +29,7 @@ public class Crypto {
         this.profit = profit;
         this.profitPercentage = profitPercentage;
         this.totalValue = totalValue;
+        this.bankingFee = bankingFee;
     }
 
     public Long getId() {
@@ -100,6 +102,14 @@ public class Crypto {
 
     public void setTotalValue(Double totalValue) {
         this.totalValue = totalValue;
+    }
+
+    public Double getBankingFee() {
+        return bankingFee;
+    }
+
+    public void setBankingFee(Double bankingFee) {
+        this.bankingFee = bankingFee;
     }
 
     @Override
