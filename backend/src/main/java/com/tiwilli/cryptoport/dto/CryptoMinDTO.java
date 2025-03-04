@@ -13,7 +13,6 @@ public class CryptoMinDTO {
     private Double depositOrWithdrawValue;
     private Double bankingFee;
     private Double quantity;
-    
 
     public CryptoMinDTO() {
     }

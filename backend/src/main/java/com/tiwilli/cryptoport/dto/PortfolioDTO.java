@@ -2,6 +2,9 @@ package com.tiwilli.cryptoport.dto;
 
 import com.tiwilli.cryptoport.entities.Portfolio;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PortfolioDTO {
 
     private Long id;
@@ -13,6 +16,8 @@ public class PortfolioDTO {
     private Double averagePrice;
     private Double profit;
     private Double profitPercentage;
+
+    private List<CryptoDTO> cryptos = new ArrayList<>();
 
     public PortfolioDTO() {
     }
@@ -75,6 +80,10 @@ public class PortfolioDTO {
 
     public Double getProfitPercentage() {
         return profitPercentage;
+    }
+
+    public List<CryptoDTO> getCryptos() {
+        return cryptos;
     }
 }
 

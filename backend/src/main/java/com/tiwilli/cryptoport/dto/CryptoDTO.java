@@ -15,11 +15,12 @@ public class CryptoDTO {
     private Double profit;
     private Double profitPercentage;
     private Double totalValue;
+    private Double bankingFee;
 
     public CryptoDTO() {
     }
 
-    public CryptoDTO(Long id, String name, LocalDate date, Double depositOrWithdrawValue, Double currentValue, Double quantity, Double profit, Double profitPercentage, Double totalValue) {
+    public CryptoDTO(Long id, String name, LocalDate date, Double depositOrWithdrawValue, Double currentValue, Double quantity, Double profit, Double profitPercentage, Double totalValue, Double bankingFee) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -29,6 +30,7 @@ public class CryptoDTO {
         this.profit = profit;
         this.profitPercentage = profitPercentage;
         this.totalValue = totalValue;
+        this.bankingFee = bankingFee;
     }
 
     public CryptoDTO(Crypto entity) {
@@ -41,6 +43,7 @@ public class CryptoDTO {
         profit = entity.getProfit();
         profitPercentage = entity.getProfitPercentage();
         totalValue = entity.getTotalValue();
+        bankingFee = entity.getBankingFee();
     }
 
     public Long getId() {
@@ -77,5 +80,9 @@ public class CryptoDTO {
 
     public Double getTotalValue() {
         return totalValue;
+    }
+
+    public Double getBankingFee() {
+        return bankingFee;
     }
 }

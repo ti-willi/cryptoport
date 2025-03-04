@@ -1,5 +1,7 @@
 package com.tiwilli.cryptoport.entities;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Portfolio {
@@ -13,6 +15,8 @@ public class Portfolio {
     private Double averagePrice;
     private Double profit;
     private Double profitPercentage;
+
+    private List<Crypto> cryptos = new ArrayList<>();
 
     public Portfolio() {
     }
@@ -99,6 +103,10 @@ public class Portfolio {
 
     public void setProfitPercentage(Double profitPercentage) {
         this.profitPercentage = profitPercentage;
+    }
+
+    public List<Crypto> getCryptos() {
+        return cryptos;
     }
 
     @Override
