@@ -1,10 +1,16 @@
 package com.tiwilli.cryptoport.entities;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Entity
+@Table(name = "tb_crypto")
 public class Crypto {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private LocalDate date;
@@ -16,10 +22,14 @@ public class Crypto {
     private Double totalValue;
     private Double bankingFee;
 
+    @ManyToOne
+    @JoinColumn(name = "portfolio_id")
+    private Portfolio portfolio;
+
     public Crypto() {
     }
 
-    public Crypto(Long id, String name, LocalDate date, Double depositOrWithdrawValue, Double currentValue, Double quantity, Double profit, Double profitPercentage, Double totalValue, Double bankingFee) {
+    public Crypto(Long id, String name, LocalDate date, Double depositOrWithdrawValue, Double currentValue, Double quantity, Double profit, Double profitPercentage, Double totalValue, Double bankingFee, Portfolio portfolio) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -30,6 +40,7 @@ public class Crypto {
         this.profitPercentage = profitPercentage;
         this.totalValue = totalValue;
         this.bankingFee = bankingFee;
+        this.portfolio = portfolio;
     }
 
     public Long getId() {
@@ -110,6 +121,14 @@ public class Crypto {
 
     public void setBankingFee(Double bankingFee) {
         this.bankingFee = bankingFee;
+    }
+
+    public Portfolio getPortfolio() {
+        return portfolio;
+    }
+
+    public void setPortfolio(Portfolio portfolio) {
+        this.portfolio = portfolio;
     }
 
     @Override

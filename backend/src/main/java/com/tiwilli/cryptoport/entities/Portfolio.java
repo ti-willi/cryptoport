@@ -1,11 +1,15 @@
 package com.tiwilli.cryptoport.entities;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import jakarta.persistence.*;
 
+import java.util.*;
+
+@Entity
+@Table(name = "tb_portfolio")
 public class Portfolio {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String cryptoName;
     private Double balance;
@@ -16,7 +20,8 @@ public class Portfolio {
     private Double profit;
     private Double profitPercentage;
 
-    private List<Crypto> cryptos = new ArrayList<>();
+    @OneToMany(mappedBy = "portfolio")
+    private Set<Crypto> cryptos = new HashSet<>();
 
     public Portfolio() {
     }
@@ -105,7 +110,7 @@ public class Portfolio {
         this.profitPercentage = profitPercentage;
     }
 
-    public List<Crypto> getCryptos() {
+    public Set<Crypto> getCryptos() {
         return cryptos;
     }
 

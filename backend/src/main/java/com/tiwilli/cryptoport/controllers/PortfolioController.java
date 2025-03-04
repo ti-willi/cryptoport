@@ -1,9 +1,6 @@
 package com.tiwilli.cryptoport.controllers;
 
-import com.tiwilli.cryptoport.dto.CryptoDTO;
 import com.tiwilli.cryptoport.dto.PortfolioDTO;
-import com.tiwilli.cryptoport.entities.Portfolio;
-import com.tiwilli.cryptoport.services.CryptoService;
 import com.tiwilli.cryptoport.services.PortfolioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
