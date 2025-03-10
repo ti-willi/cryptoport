@@ -2,7 +2,9 @@ package com.tiwilli.cryptoport.services;
 
 import com.tiwilli.cryptoport.dto.CryptoDTO;
 import com.tiwilli.cryptoport.entities.Crypto;
+import com.tiwilli.cryptoport.entities.Portfolio;
 import com.tiwilli.cryptoport.repositories.CryptoRepository;
+import com.tiwilli.cryptoport.repositories.PortfolioRepository;
 import com.tiwilli.cryptoport.services.exceptions.DatabaseException;
 import com.tiwilli.cryptoport.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,6 +21,9 @@ public class CryptoService {
 
     @Autowired
     private CryptoRepository repository;
+
+    @Autowired
+    private PortfolioRepository portfolioRepository;
 
     @Transactional(readOnly = true)
     public CryptoDTO findById(Long id) {
@@ -78,5 +83,8 @@ public class CryptoService {
         entity.setProfitPercentage(dto.getProfitPercentage());
         entity.setQuantity(dto.getQuantity());
         entity.setTotalValue(dto.getTotalValue());
+
+        Portfolio portfolio = portfolioRepository.getReferenceById(dto.getPortfolioId());
+        entity.setPortfolio(portfolio);
     }
 }

@@ -75,14 +75,7 @@ public class PortfolioService {
 
     @Transactional
     private void copyDtoToEntity(PortfolioDTO dto, Portfolio entity) {
-        entity.setCryptoName(dto.getCryptoName());
-        entity.setProfit(dto.getProfit());
-        entity.setBalance(dto.getBalance());
-        entity.setFunds(dto.getFunds());
-        entity.setProfitPercentage(dto.getProfitPercentage());
-        entity.setCurrentPrice(dto.getCurrentPrice());
-        entity.setAveragePrice(dto.getAveragePrice());
-        entity.setTotalCoins(dto.getTotalCoins());
+        entity.setName(dto.getName());
 
         entity.getCryptos().clear();
         for (CryptoDTO cryptoDTO : dto.getCryptos()) {
@@ -90,4 +83,5 @@ public class PortfolioService {
             entity.getCryptos().add(crypto);
         }
     }
-}
+
+ }

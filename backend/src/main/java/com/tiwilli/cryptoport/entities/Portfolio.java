@@ -1,5 +1,6 @@
 package com.tiwilli.cryptoport.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.*;
@@ -11,7 +12,7 @@ public class Portfolio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String cryptoName;
+    private String name;
     private Double balance;
     private Double currentPrice;
     private Double totalCoins;
@@ -26,9 +27,9 @@ public class Portfolio {
     public Portfolio() {
     }
 
-    public Portfolio(Long id, String cryptoName, Double balance, Double currentPrice, Double totalCoins, Double funds, Double averagePrice, Double profit, Double profitPercentage) {
+    public Portfolio(Long id, String name, Double balance, Double currentPrice, Double totalCoins, Double funds, Double averagePrice, Double profit, Double profitPercentage) {
         this.id = id;
-        this.cryptoName = cryptoName;
+        this.name = name;
         this.balance = balance;
         this.currentPrice = currentPrice;
         this.totalCoins = totalCoins;
@@ -46,12 +47,12 @@ public class Portfolio {
         this.id = id;
     }
 
-    public String getCryptoName() {
-        return cryptoName;
+    public String getName() {
+        return name;
     }
 
-    public void setCryptoName(String cryptoName) {
-        this.cryptoName = cryptoName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Double getBalance() {

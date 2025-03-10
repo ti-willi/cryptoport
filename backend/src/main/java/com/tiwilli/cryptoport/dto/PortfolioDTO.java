@@ -2,13 +2,14 @@ package com.tiwilli.cryptoport.dto;
 
 import com.tiwilli.cryptoport.entities.Portfolio;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PortfolioDTO {
 
     private Long id;
-    private String cryptoName;
+    private String name;
     private Double balance;
     private Double currentPrice;
     private Double totalCoins;
@@ -17,14 +18,14 @@ public class PortfolioDTO {
     private Double profit;
     private Double profitPercentage;
 
-    private List<CryptoDTO> cryptos = new ArrayList<>();
+    private Set<CryptoDTO> cryptos = new HashSet<>();
 
     public PortfolioDTO() {
     }
 
-    public PortfolioDTO(Long id, String cryptoName, Double balance, Double currentPrice, Double totalCoins, Double funds, Double averagePrice, Double profit, Double profitPercentage) {
+    public PortfolioDTO(Long id, String name, Double balance, Double currentPrice, Double totalCoins, Double funds, Double averagePrice, Double profit, Double profitPercentage) {
         this.id = id;
-        this.cryptoName = cryptoName;
+        this.name = name;
         this.balance = balance;
         this.currentPrice = currentPrice;
         this.totalCoins = totalCoins;
@@ -36,7 +37,7 @@ public class PortfolioDTO {
 
     public PortfolioDTO(Portfolio entity) {
         id = entity.getId();
-        cryptoName = entity.getCryptoName();
+        name = entity.getName();
         balance = entity.getBalance();
         currentPrice = entity.getCurrentPrice();
         totalCoins = entity.getTotalCoins();
@@ -44,14 +45,16 @@ public class PortfolioDTO {
         averagePrice = entity.getAveragePrice();
         profit = entity.getProfit();
         profitPercentage = entity.getProfitPercentage();
+        this.cryptos = entity.getCryptos().stream()
+                .map(CryptoDTO::new).collect(Collectors.toSet());
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getCryptoName() {
-        return cryptoName;
+    public String getName() {
+        return name;
     }
 
     public Double getBalance() {
@@ -82,7 +85,7 @@ public class PortfolioDTO {
         return profitPercentage;
     }
 
-    public List<CryptoDTO> getCryptos() {
+    public Set<CryptoDTO> getCryptos() {
         return cryptos;
     }
 }

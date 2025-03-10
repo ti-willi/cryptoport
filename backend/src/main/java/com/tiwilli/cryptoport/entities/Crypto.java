@@ -1,5 +1,6 @@
 package com.tiwilli.cryptoport.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
