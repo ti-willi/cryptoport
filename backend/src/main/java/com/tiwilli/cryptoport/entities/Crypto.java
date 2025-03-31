@@ -1,9 +1,9 @@
 package com.tiwilli.cryptoport.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -14,33 +14,32 @@ public class Crypto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private LocalDate date;
-    private Double depositOrWithdrawValue;
-    private Double currentValue;
+    private Double amountInvested;
+    private Double currentBalance;
     private Double quantity;
+    private double averagePrice;
     private Double profit;
     private Double profitPercentage;
-    private Double totalValue;
-    private Double bankingFee;
 
     @ManyToOne
     @JoinColumn(name = "portfolio_id")
     private Portfolio portfolio;
 
+    @OneToMany(mappedBy = "crypto", cascade = CascadeType.ALL)
+    private List<Investment> investments = new ArrayList<>();
+
     public Crypto() {
     }
 
-    public Crypto(Long id, String name, LocalDate date, Double depositOrWithdrawValue, Double currentValue, Double quantity, Double profit, Double profitPercentage, Double totalValue, Double bankingFee, Portfolio portfolio) {
+    public Crypto(Long id, String name, Double amountInvested, Double currentBalance, Double quantity, Double averagePrice, Double profit, Double profitPercentage, Portfolio portfolio) {
         this.id = id;
         this.name = name;
-        this.date = date;
-        this.depositOrWithdrawValue = depositOrWithdrawValue;
-        this.currentValue = currentValue;
+        this.amountInvested = amountInvested;
+        this.currentBalance = currentBalance;
         this.quantity = quantity;
+        this.averagePrice = averagePrice;
         this.profit = profit;
         this.profitPercentage = profitPercentage;
-        this.totalValue = totalValue;
-        this.bankingFee = bankingFee;
         this.portfolio = portfolio;
     }
 
@@ -60,28 +59,20 @@ public class Crypto {
         this.name = name;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public Double getAmountInvested() {
+        return amountInvested;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setAmountInvested(Double amountInvested) {
+        this.amountInvested = amountInvested;
     }
 
-    public Double getDepositOrWithdrawValue() {
-        return depositOrWithdrawValue;
+    public Double getCurrentBalance() {
+        return currentBalance;
     }
 
-    public void setDepositOrWithdrawValue(Double depositOrWithdrawValue) {
-        this.depositOrWithdrawValue = depositOrWithdrawValue;
-    }
-
-    public Double getCurrentValue() {
-        return currentValue;
-    }
-
-    public void setCurrentValue(Double currentValue) {
-        this.currentValue = currentValue;
+    public void setCurrentBalance(Double currentBalance) {
+        this.currentBalance = currentBalance;
     }
 
     public Double getQuantity() {
@@ -90,6 +81,14 @@ public class Crypto {
 
     public void setQuantity(Double quantity) {
         this.quantity = quantity;
+    }
+
+    public double getAveragePrice() {
+        return averagePrice;
+    }
+
+    public void setAveragePrice(double averagePrice) {
+        this.averagePrice = averagePrice;
     }
 
     public Double getProfit() {
@@ -108,28 +107,16 @@ public class Crypto {
         this.profitPercentage = profitPercentage;
     }
 
-    public Double getTotalValue() {
-        return totalValue;
-    }
-
-    public void setTotalValue(Double totalValue) {
-        this.totalValue = totalValue;
-    }
-
-    public Double getBankingFee() {
-        return bankingFee;
-    }
-
-    public void setBankingFee(Double bankingFee) {
-        this.bankingFee = bankingFee;
-    }
-
     public Portfolio getPortfolio() {
         return portfolio;
     }
 
     public void setPortfolio(Portfolio portfolio) {
         this.portfolio = portfolio;
+    }
+
+    public List<Investment> getInvestments() {
+        return investments;
     }
 
     @Override

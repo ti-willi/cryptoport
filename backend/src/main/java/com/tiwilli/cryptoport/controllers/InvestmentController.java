@@ -1,7 +1,7 @@
 package com.tiwilli.cryptoport.controllers;
 
-import com.tiwilli.cryptoport.dto.CryptoDTO;
-import com.tiwilli.cryptoport.services.CryptoService;
+import com.tiwilli.cryptoport.dto.InvestmentDTO;
+import com.tiwilli.cryptoport.services.InvestmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,26 +12,26 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping(value = "/cryptos")
-public class CryptoController {
+@RequestMapping(value = "/investments")
+public class InvestmentController {
 
     @Autowired
-    private CryptoService service;
+    private InvestmentService service;
 
     @GetMapping
-    public ResponseEntity<Page<CryptoDTO>> findAll(Pageable pageable) {
-        Page<CryptoDTO> list = service.findAll(pageable);
+    public ResponseEntity<Page<InvestmentDTO>> findAll(Pageable pageable) {
+        Page<InvestmentDTO> list = service.findAll(pageable);
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CryptoDTO> findById(@PathVariable Long id) {
-        CryptoDTO dto = service.findById(id);
+    public ResponseEntity<InvestmentDTO> findById(@PathVariable Long id) {
+        InvestmentDTO dto = service.findById(id);
         return ResponseEntity.ok().body(dto);
     }
 
     @PostMapping
-    public ResponseEntity<CryptoDTO> insert(@RequestBody CryptoDTO dto) {
+    public ResponseEntity<InvestmentDTO> insert(@RequestBody InvestmentDTO dto) {
         dto = service.insert(dto);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
@@ -40,7 +40,7 @@ public class CryptoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CryptoDTO> update(@PathVariable Long id, @RequestBody CryptoDTO dto) {
+    public ResponseEntity<InvestmentDTO> update(@PathVariable Long id, @RequestBody InvestmentDTO dto) {
         dto = service.update(id, dto);
         return ResponseEntity.ok().body(dto);
     }

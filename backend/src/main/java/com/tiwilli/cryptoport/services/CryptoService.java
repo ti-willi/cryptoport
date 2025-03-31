@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+
 @Service
 public class CryptoService {
 
@@ -43,6 +45,7 @@ public class CryptoService {
         Crypto entity = new Crypto();
         copyDtoToEntity(dto, entity);
         entity = repository.save(entity);
+        updatePortfolio(dto.getPortfolioId());
         return new CryptoDTO(entity);
     }
 
@@ -75,16 +78,45 @@ public class CryptoService {
     @Transactional
     private void copyDtoToEntity(CryptoDTO dto, Crypto entity) {
         entity.setName(dto.getName());
-        entity.setDate(dto.getDate());
-        entity.setBankingFee(dto.getBankingFee());
-        entity.setProfit(dto.getProfit());
-        entity.setCurrentValue(dto.getCurrentValue());
-        entity.setDepositOrWithdrawValue(dto.getDepositOrWithdrawValue());
-        entity.setProfitPercentage(dto.getProfitPercentage());
+        entity.setAmountInvested(dto.getAmountInvested());
+        entity.setCurrentBalance(dto.getCurrentBalance());
         entity.setQuantity(dto.getQuantity());
-        entity.setTotalValue(dto.getTotalValue());
+        entity.setAveragePrice(dto.getAveragePrice());
+        entity.setProfit(dto.getProfit());
+        entity.setProfitPercentage(dto.getProfitPercentage());
 
         Portfolio portfolio = portfolioRepository.getReferenceById(dto.getPortfolioId());
         entity.setPortfolio(portfolio);
     }
+
+    @Transactional
+    public void updatePortfolio(Long portfolioId) {
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Portfolio não encontrado"));
+
+        double amountInvested = calculateAmountInvested(portfolio);
+        double profit = calculateProfit(portfolio);
+
+        portfolio.setAmountInvested(amountInvested);
+        portfolio.setProfit(profit);
+
+        portfolioRepository.save(portfolio);
+    }
+
+    private double calculateAmountInvested(Portfolio portfolio) {
+        return portfolio.getCryptos().stream()
+                .mapToDouble(Crypto::getAmountInvested)
+                .sum();
+    }
+
+    private double calculateProfit(Portfolio portfolio) {
+        return portfolio.getCryptos().stream()
+                .mapToDouble(Crypto::getProfit)
+                .sum();
+    }
+
+
+
+
+
 }

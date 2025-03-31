@@ -12,7 +12,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping(value = "/portfolio")
+@RequestMapping(value = "/portfolios")
 public class PortfolioController {
 
     @Autowired

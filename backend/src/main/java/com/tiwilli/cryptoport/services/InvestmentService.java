@@ -1,9 +1,8 @@
 package com.tiwilli.cryptoport.services;
 
-import com.tiwilli.cryptoport.dto.PortfolioDTO;
-import com.tiwilli.cryptoport.entities.Portfolio;
-import com.tiwilli.cryptoport.repositories.CryptoRepository;
-import com.tiwilli.cryptoport.repositories.PortfolioRepository;
+import com.tiwilli.cryptoport.dto.InvestmentDTO;
+import com.tiwilli.cryptoport.entities.Investment;
+import com.tiwilli.cryptoport.repositories.InvestmentRepository;
 import com.tiwilli.cryptoport.services.exceptions.DatabaseException;
 import com.tiwilli.cryptoport.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,44 +14,40 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Service
-public class PortfolioService {
+public class InvestmentService {
 
     @Autowired
-    private PortfolioRepository repository;
-
-    @Autowired
-    private CryptoRepository cryptoRepository;
+    private InvestmentRepository repository;
 
     @Transactional(readOnly = true)
-    public PortfolioDTO findById(Long id) {
-        Portfolio portfolio = repository.findById(id).orElseThrow(
+    public InvestmentDTO findById(Long id) {
+        Investment investment = repository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Entity not found"));
-        return new PortfolioDTO(portfolio);
+        return new InvestmentDTO(investment);
     }
 
     @Transactional(readOnly = true)
-    public Page<PortfolioDTO> findAll(Pageable pageable) {
-        Page<Portfolio> result = repository.findAll(pageable);
-        return result.map(PortfolioDTO::new);
+    public Page<InvestmentDTO> findAll(Pageable pageable) {
+        Page<Investment> result = repository.findAll(pageable);
+        return result.map(InvestmentDTO::new);
     }
 
     @Transactional
-    public PortfolioDTO insert(PortfolioDTO dto) {
-        Portfolio entity = new Portfolio();
+    public InvestmentDTO insert(InvestmentDTO dto) {
+        Investment entity = new Investment();
         copyDtoToEntity(dto, entity);
         entity = repository.save(entity);
-        return new PortfolioDTO(entity);
+        return new InvestmentDTO(entity);
     }
 
     @Transactional
-    public PortfolioDTO update(Long id, PortfolioDTO dto) {
+    public InvestmentDTO update(Long id, InvestmentDTO dto) {
         try {
-            Portfolio entity = repository.getReferenceById(id);
+            Investment entity = repository.getReferenceById(id);
             copyDtoToEntity(dto, entity);
             entity = repository.save(entity);
-            return new PortfolioDTO(entity);
+            return new InvestmentDTO(entity);
         }
         catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Id not found");
@@ -73,9 +68,16 @@ public class PortfolioService {
     }
 
     @Transactional
-    private void copyDtoToEntity(PortfolioDTO dto, Portfolio entity) {
+    private void copyDtoToEntity(InvestmentDTO dto, Investment entity) {
         entity.setName(dto.getName());
+        entity.setDate(dto.getDate());
+        entity.setDepositOrWithdraw(dto.getDepositOrWithdraw());
+        entity.setCryptoValue(dto.getCryptoValue());
+        entity.setQuantity(dto.getQuantity());
+        entity.setProfit(dto.getProfit());
+        entity.setProfitPercentage(dto.getProfitPercentage());
+        entity.setBrokerage(dto.getBrokerage());
+
     }
 
-
- }
+}

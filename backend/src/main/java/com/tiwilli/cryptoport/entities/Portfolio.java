@@ -1,6 +1,5 @@
 package com.tiwilli.cryptoport.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.*;
@@ -13,11 +12,8 @@ public class Portfolio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private Double balance;
-    private Double currentPrice;
-    private Double totalCoins;
-    private Double funds;
-    private Double averagePrice;
+    private Double amountInvested;
+    private Double currentBalance;
     private Double profit;
     private Double profitPercentage;
 
@@ -27,14 +23,11 @@ public class Portfolio {
     public Portfolio() {
     }
 
-    public Portfolio(Long id, String name, Double balance, Double currentPrice, Double totalCoins, Double funds, Double averagePrice, Double profit, Double profitPercentage) {
+    public Portfolio(Long id, String name, Double amountInvested, Double currentBalance, Double profit, Double profitPercentage) {
         this.id = id;
         this.name = name;
-        this.balance = balance;
-        this.currentPrice = currentPrice;
-        this.totalCoins = totalCoins;
-        this.funds = funds;
-        this.averagePrice = averagePrice;
+        this.amountInvested = amountInvested;
+        this.currentBalance = currentBalance;
         this.profit = profit;
         this.profitPercentage = profitPercentage;
     }
@@ -55,44 +48,20 @@ public class Portfolio {
         this.name = name;
     }
 
-    public Double getBalance() {
-        return balance;
+    public Double getAmountInvested() {
+        return amountInvested;
     }
 
-    public void setBalance(Double balance) {
-        this.balance = balance;
+    public void setAmountInvested(Double amountInvested) {
+        this.amountInvested = amountInvested;
     }
 
-    public Double getCurrentPrice() {
-        return currentPrice;
+    public Double getCurrentBalance() {
+        return currentBalance;
     }
 
-    public void setCurrentPrice(Double currentPrice) {
-        this.currentPrice = currentPrice;
-    }
-
-    public Double getTotalCoins() {
-        return totalCoins;
-    }
-
-    public void setTotalCoins(Double totalCoins) {
-        this.totalCoins = totalCoins;
-    }
-
-    public Double getFunds() {
-        return funds;
-    }
-
-    public void setFunds(Double funds) {
-        this.funds = funds;
-    }
-
-    public Double getAveragePrice() {
-        return averagePrice;
-    }
-
-    public void setAveragePrice(Double averagePrice) {
-        this.averagePrice = averagePrice;
+    public void setCurrentBalance(Double currentBalance) {
+        this.currentBalance = currentBalance;
     }
 
     public Double getProfit() {
