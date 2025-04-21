@@ -1,9 +1,9 @@
 package com.tiwilli.cryptoport.entities;
 
+import com.tiwilli.cryptoport.entities.enums.TransactionType;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
@@ -14,10 +14,13 @@ public class Crypto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private Double amountInvested;
+    private LocalDate date;
+    private Double depositOrWithdraw;
+    private Double cryptoValue;
     private Double currentBalance;
     private Double quantity;
-    private double averagePrice;
+    private Double brokerageFee;
+    private TransactionType type;
     private Double profit;
     private Double profitPercentage;
 
@@ -25,19 +28,19 @@ public class Crypto {
     @JoinColumn(name = "portfolio_id")
     private Portfolio portfolio;
 
-    @OneToMany(mappedBy = "crypto", cascade = CascadeType.ALL)
-    private List<Investment> investments = new ArrayList<>();
-
     public Crypto() {
     }
 
-    public Crypto(Long id, String name, Double amountInvested, Double currentBalance, Double quantity, Double averagePrice, Double profit, Double profitPercentage, Portfolio portfolio) {
+    public Crypto(Long id, String name, LocalDate date, Double depositOrWithdraw, Double cryptoValue, Double currentBalance, Double quantity, Double brokerageFee, TransactionType type, Double profit, Double profitPercentage, Portfolio portfolio) {
         this.id = id;
         this.name = name;
-        this.amountInvested = amountInvested;
+        this.date = date;
+        this.depositOrWithdraw = depositOrWithdraw;
+        this.cryptoValue = cryptoValue;
         this.currentBalance = currentBalance;
         this.quantity = quantity;
-        this.averagePrice = averagePrice;
+        this.brokerageFee = brokerageFee;
+        this.type = type;
         this.profit = profit;
         this.profitPercentage = profitPercentage;
         this.portfolio = portfolio;
@@ -59,12 +62,28 @@ public class Crypto {
         this.name = name;
     }
 
-    public Double getAmountInvested() {
-        return amountInvested;
+    public LocalDate getDate() {
+        return date;
     }
 
-    public void setAmountInvested(Double amountInvested) {
-        this.amountInvested = amountInvested;
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public Double getDepositOrWithdraw() {
+        return depositOrWithdraw;
+    }
+
+    public void setDepositOrWithdraw(Double depositOrWithdraw) {
+        this.depositOrWithdraw = depositOrWithdraw;
+    }
+
+    public Double getCryptoValue() {
+        return cryptoValue;
+    }
+
+    public void setCryptoValue(Double cryptoValue) {
+        this.cryptoValue = cryptoValue;
     }
 
     public Double getCurrentBalance() {
@@ -83,12 +102,20 @@ public class Crypto {
         this.quantity = quantity;
     }
 
-    public double getAveragePrice() {
-        return averagePrice;
+    public Double getBrokerageFee() {
+        return brokerageFee;
     }
 
-    public void setAveragePrice(double averagePrice) {
-        this.averagePrice = averagePrice;
+    public void setBrokerageFee(Double brokerageFee) {
+        this.brokerageFee = brokerageFee;
+    }
+
+    public TransactionType getType() {
+        return type;
+    }
+
+    public void setType(TransactionType type) {
+        this.type = type;
     }
 
     public Double getProfit() {
@@ -113,10 +140,6 @@ public class Crypto {
 
     public void setPortfolio(Portfolio portfolio) {
         this.portfolio = portfolio;
-    }
-
-    public List<Investment> getInvestments() {
-        return investments;
     }
 
     @Override

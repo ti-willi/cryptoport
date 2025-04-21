@@ -1,6 +1,8 @@
 package com.tiwilli.cryptoport.services;
 
+import com.tiwilli.cryptoport.dto.CryptoDTO;
 import com.tiwilli.cryptoport.dto.PortfolioDTO;
+import com.tiwilli.cryptoport.entities.Crypto;
 import com.tiwilli.cryptoport.entities.Portfolio;
 import com.tiwilli.cryptoport.repositories.CryptoRepository;
 import com.tiwilli.cryptoport.repositories.PortfolioRepository;
@@ -75,6 +77,12 @@ public class PortfolioService {
     @Transactional
     private void copyDtoToEntity(PortfolioDTO dto, Portfolio entity) {
         entity.setName(dto.getName());
+    }
+
+    private double calculateProfit(Portfolio portfolio) {
+        return portfolio.getCryptos().stream()
+                .mapToDouble(Crypto::getProfit)
+                .sum();
     }
 
 

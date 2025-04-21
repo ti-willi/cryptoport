@@ -1,37 +1,38 @@
 package com.tiwilli.cryptoport.dto;
 
 import com.tiwilli.cryptoport.entities.Crypto;
-import com.tiwilli.cryptoport.entities.Investment;
+import com.tiwilli.cryptoport.entities.enums.TransactionType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.time.LocalDate;
 
 public class CryptoDTO {
 
     private Long id;
     private String name;
-    private Double amountInvested;
+    private LocalDate date;
+    private Double depositOrWithdraw;
+    private Double cryptoValue;
     private Double currentBalance;
     private Double quantity;
-    private Double averagePrice;
+    private Double brokerageFee;
+    private TransactionType type;
     private Double profit;
     private Double profitPercentage;
-
     private Long portfolioId;
-
-    private List<InvestmentDTO> investments = new ArrayList<>();
 
     public CryptoDTO() {
     }
 
-    public CryptoDTO(Long id, String name, Double amountInvested, Double currentBalance, Double quantity, Double averagePrice, Double profit, Double profitPercentage, Long portfolioId) {
+    public CryptoDTO(Long id, String name, LocalDate date, Double depositOrWithdraw, Double cryptoValue, Double currentBalance, Double quantity, Double brokerageFee, TransactionType type, Double profit, Double profitPercentage, Long portfolioId) {
         this.id = id;
         this.name = name;
-        this.amountInvested = amountInvested;
+        this.date = date;
+        this.depositOrWithdraw = depositOrWithdraw;
+        this.cryptoValue = cryptoValue;
         this.currentBalance = currentBalance;
         this.quantity = quantity;
-        this.averagePrice = averagePrice;
+        this.brokerageFee = brokerageFee;
+        this.type = type;
         this.profit = profit;
         this.profitPercentage = profitPercentage;
         this.portfolioId = portfolioId;
@@ -40,15 +41,16 @@ public class CryptoDTO {
     public CryptoDTO(Crypto entity) {
         id = entity.getId();
         name = entity.getName();
-        amountInvested = entity.getAmountInvested();
+        date = entity.getDate();
+        depositOrWithdraw = entity.getDepositOrWithdraw();
+        cryptoValue = entity.getCryptoValue();
         currentBalance = entity.getCurrentBalance();
         quantity = entity.getQuantity();
-        averagePrice = entity.getAveragePrice();
+        brokerageFee = entity.getBrokerageFee();
+        type = entity.getType();
         profit = entity.getProfit();
         profitPercentage = entity.getProfitPercentage();
         portfolioId = entity.getPortfolio().getId();
-        this.investments = entity.getInvestments().stream()
-                .map(InvestmentDTO::new).collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -59,8 +61,16 @@ public class CryptoDTO {
         return name;
     }
 
-    public Double getAmountInvested() {
-        return amountInvested;
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public Double getDepositOrWithdraw() {
+        return depositOrWithdraw;
+    }
+
+    public Double getCryptoValue() {
+        return cryptoValue;
     }
 
     public Double getCurrentBalance() {
@@ -71,8 +81,12 @@ public class CryptoDTO {
         return quantity;
     }
 
-    public Double getAveragePrice() {
-        return averagePrice;
+    public Double getBrokerageFee() {
+        return brokerageFee;
+    }
+
+    public TransactionType getType() {
+        return type;
     }
 
     public Double getProfit() {
@@ -85,9 +99,5 @@ public class CryptoDTO {
 
     public Long getPortfolioId() {
         return portfolioId;
-    }
-
-    public List<InvestmentDTO> getInvestments() {
-        return investments;
     }
 }

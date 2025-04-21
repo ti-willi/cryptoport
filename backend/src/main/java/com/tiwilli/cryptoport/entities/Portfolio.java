@@ -18,7 +18,7 @@ public class Portfolio {
     private Double profitPercentage;
 
     @OneToMany(mappedBy = "portfolio")
-    private Set<Crypto> cryptos = new HashSet<>();
+    private List<Crypto> cryptos = new ArrayList<>();
 
     public Portfolio() {
     }
@@ -80,7 +80,7 @@ public class Portfolio {
         this.profitPercentage = profitPercentage;
     }
 
-    public Set<Crypto> getCryptos() {
+    public List<Crypto> getCryptos() {
         return cryptos;
     }
 

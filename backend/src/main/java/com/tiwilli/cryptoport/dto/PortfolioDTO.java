@@ -2,8 +2,8 @@ package com.tiwilli.cryptoport.dto;
 
 import com.tiwilli.cryptoport.entities.Portfolio;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class PortfolioDTO {
@@ -15,7 +15,7 @@ public class PortfolioDTO {
     private Double profit;
     private Double profitPercentage;
 
-    private Set<CryptoDTO> cryptos = new HashSet<>();
+    private List<CryptoDTO> cryptos = new ArrayList<>();
 
     public PortfolioDTO() {
     }
@@ -37,7 +37,7 @@ public class PortfolioDTO {
         profit = entity.getProfit();
         profitPercentage = entity.getProfitPercentage();
         this.cryptos = entity.getCryptos().stream()
-                .map(CryptoDTO::new).collect(Collectors.toSet());
+                .map(CryptoDTO::new).collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -64,7 +64,7 @@ public class PortfolioDTO {
         return profitPercentage;
     }
 
-    public Set<CryptoDTO> getCryptos() {
+    public List<CryptoDTO> getCryptos() {
         return cryptos;
     }
 }

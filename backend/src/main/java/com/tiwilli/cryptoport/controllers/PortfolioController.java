@@ -1,6 +1,9 @@
 package com.tiwilli.cryptoport.controllers;
 
+import com.tiwilli.cryptoport.dto.CryptoDTO;
+import com.tiwilli.cryptoport.dto.CryptoMinDTO;
 import com.tiwilli.cryptoport.dto.PortfolioDTO;
+import com.tiwilli.cryptoport.services.CryptoService;
 import com.tiwilli.cryptoport.services.PortfolioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/portfolios")
@@ -17,6 +21,9 @@ public class PortfolioController {
 
     @Autowired
     private PortfolioService service;
+
+    @Autowired
+    private CryptoService cryptoService;
 
     @GetMapping
     public ResponseEntity<Page<PortfolioDTO>> findAll(Pageable pageable) {
@@ -28,6 +35,12 @@ public class PortfolioController {
     public ResponseEntity<PortfolioDTO> findById(@PathVariable Long id) {
         PortfolioDTO dto = service.findById(id);
         return ResponseEntity.ok().body(dto);
+    }
+
+    @GetMapping("/{id}/cryptos")
+    public ResponseEntity<List<CryptoMinDTO>> findByGropedCryptos(@PathVariable Long id) {
+        List<CryptoMinDTO> list = cryptoService.getGroupedCryptoBalances(id);
+        return ResponseEntity.ok(list);
     }
 
     @PostMapping
