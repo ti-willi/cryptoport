@@ -31,6 +31,9 @@ public class CryptoService {
     @Autowired
     private PortfolioRepository portfolioRepository;
 
+    @Autowired
+    private PortfolioService portfolioService;
+
 
     @Transactional(readOnly = true)
     public CryptoDTO findById(Long id) {
@@ -49,9 +52,8 @@ public class CryptoService {
     public CryptoDTO insert(CryptoDTO dto) {
         Crypto entity = new Crypto();
         copyDtoToEntity(dto, entity);
-        //updateBalance(entity);
         entity = repository.save(entity);
-        //updatePortfolio(dto.getPortfolioId());
+        portfolioService.updatePortfolio(entity.getPortfolio());
         return new CryptoDTO(entity);
     }
 
@@ -61,6 +63,7 @@ public class CryptoService {
             Crypto entity = repository.getReferenceById(id);
             copyDtoToEntity(dto, entity);
             entity = repository.save(entity);
+            portfolioService.updatePortfolio(entity.getPortfolio());
             return new CryptoDTO(entity);
         }
         catch (EntityNotFoundException e) {
@@ -87,10 +90,10 @@ public class CryptoService {
         entity.setDate(dto.getDate());
         entity.setDepositOrWithdraw(dto.getDepositOrWithdraw());
         entity.setCryptoValue(dto.getCryptoValue());
-        entity.setCurrentBalance(Utils.decimalFormat(calculateCurrentBalance(dto, 60000.0)));
+        entity.setCurrentBalance(Utils.decimalFormat(calculateCurrentBalance(dto, 90000.0)));
         entity.setQuantity(calculateQuantity(dto));
-        entity.setProfit(Utils.decimalFormat(calculateProfit(dto, 60000.0)));
-        entity.setProfitPercentage(Utils.decimalFormat(calculateProfitPercentage(dto, 60000.0)));
+        entity.setProfit(Utils.decimalFormat(calculateProfit(dto, 90000.0)));
+        entity.setProfitPercentage(Utils.decimalFormat(calculateProfitPercentage(dto, 90000.0)));
         entity.setType(dto.getType());
         entity.setBrokerageFee(dto.getBrokerageFee());
 
@@ -200,13 +203,7 @@ public class CryptoService {
                 .mapToDouble(Crypto::getCurrentBalance)
                 .sum();
 
-        double profit;
-        if (amountInvested > 0) {
-            profit = totalCurrentBalance - amountInvested;
-        }
-        else {
-            profit = totalCurrentBalance + amountInvested;
-        }
+        double profit = totalCurrentBalance - amountInvested;
 
         return (profit / amountInvested) * 100.0;
     }
@@ -227,17 +224,5 @@ public class CryptoService {
         }
         return totalInvested / totalQuantity;
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

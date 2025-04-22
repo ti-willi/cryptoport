@@ -44,29 +44,54 @@ public class PortfolioDTO {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Double getAmountInvested() {
         return amountInvested;
     }
 
+    public void setAmountInvested(Double amountInvested) {
+        this.amountInvested = amountInvested;
+    }
+
     public Double getCurrentBalance() {
         return currentBalance;
+    }
+
+    public void setCurrentBalance(Double currentBalance) {
+        this.currentBalance = currentBalance;
     }
 
     public Double getProfit() {
         return profit;
     }
 
+    public void setProfit(Double profit) {
+        this.profit = profit;
+    }
+
     public Double getProfitPercentage() {
         return profitPercentage;
+    }
+
+    public void setProfitPercentage(Double profitPercentage) {
+        this.profitPercentage = profitPercentage;
     }
 
     public List<CryptoDTO> getCryptos() {
         return cryptos;
     }
+
 }
 
 
