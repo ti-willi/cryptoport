@@ -13,16 +13,16 @@ public class Crypto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Long cryptoId;
     private String name;
+    private String symbol;
+    private String logoUrl;
     private LocalDate date;
     private Double depositOrWithdraw;
     private Double cryptoValue;
-    private Double currentBalance;
     private Double quantity;
     private Double brokerageFee;
     private TransactionType type;
-    private Double profit;
-    private Double profitPercentage;
 
     @ManyToOne
     @JoinColumn(name = "portfolio_id")
@@ -31,18 +31,18 @@ public class Crypto {
     public Crypto() {
     }
 
-    public Crypto(Long id, String name, LocalDate date, Double depositOrWithdraw, Double cryptoValue, Double currentBalance, Double quantity, Double brokerageFee, TransactionType type, Double profit, Double profitPercentage, Portfolio portfolio) {
+    public Crypto(Long id, Long cryptoId, String name, String symbol, String logoUrl, LocalDate date, Double depositOrWithdraw, Double cryptoValue, Double quantity, Double brokerageFee, TransactionType type, Portfolio portfolio) {
         this.id = id;
+        this.cryptoId = cryptoId;
         this.name = name;
+        this.symbol = symbol;
+        this.logoUrl = logoUrl;
         this.date = date;
         this.depositOrWithdraw = depositOrWithdraw;
         this.cryptoValue = cryptoValue;
-        this.currentBalance = currentBalance;
         this.quantity = quantity;
         this.brokerageFee = brokerageFee;
         this.type = type;
-        this.profit = profit;
-        this.profitPercentage = profitPercentage;
         this.portfolio = portfolio;
     }
 
@@ -54,12 +54,36 @@ public class Crypto {
         this.id = id;
     }
 
+    public Long getCryptoId() {
+        return cryptoId;
+    }
+
+    public void setCryptoId(Long cryptoId) {
+        this.cryptoId = cryptoId;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
+
+    public String getLogoUrl() {
+        return logoUrl;
+    }
+
+    public void setLogoUrl(String logoUrl) {
+        this.logoUrl = logoUrl;
     }
 
     public LocalDate getDate() {
@@ -86,14 +110,6 @@ public class Crypto {
         this.cryptoValue = cryptoValue;
     }
 
-    public Double getCurrentBalance() {
-        return currentBalance;
-    }
-
-    public void setCurrentBalance(Double currentBalance) {
-        this.currentBalance = currentBalance;
-    }
-
     public Double getQuantity() {
         return quantity;
     }
@@ -116,22 +132,6 @@ public class Crypto {
 
     public void setType(TransactionType type) {
         this.type = type;
-    }
-
-    public Double getProfit() {
-        return profit;
-    }
-
-    public void setProfit(Double profit) {
-        this.profit = profit;
-    }
-
-    public Double getProfitPercentage() {
-        return profitPercentage;
-    }
-
-    public void setProfitPercentage(Double profitPercentage) {
-        this.profitPercentage = profitPercentage;
     }
 
     public Portfolio getPortfolio() {

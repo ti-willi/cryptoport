@@ -1,5 +1,6 @@
 package com.tiwilli.cryptoport.services;
 
+import com.tiwilli.cryptoport.dto.CoinMarketCapDTO;
 import com.tiwilli.cryptoport.dto.CryptoDTO;
 import com.tiwilli.cryptoport.dto.CryptoMinDTO;
 import com.tiwilli.cryptoport.entities.Crypto;
@@ -9,7 +10,6 @@ import com.tiwilli.cryptoport.repositories.CryptoRepository;
 import com.tiwilli.cryptoport.repositories.PortfolioRepository;
 import com.tiwilli.cryptoport.services.exceptions.DatabaseException;
 import com.tiwilli.cryptoport.services.exceptions.ResourceNotFoundException;
-import com.tiwilli.cryptoport.util.Utils;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -34,18 +34,23 @@ public class CryptoService {
     @Autowired
     private PortfolioService portfolioService;
 
+    @Autowired
+    private CoinMarketCapService coinMarketCapService;
+
 
     @Transactional(readOnly = true)
     public CryptoDTO findById(Long id) {
         Crypto crypto = repository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Entity not found"));
-        return new CryptoDTO(crypto);
+        CoinMarketCapDTO coinMarketCapDTO = coinMarketCapService.getData();
+        return toDto(crypto, coinMarketCapDTO);
     }
 
     @Transactional(readOnly = true)
     public Page<CryptoDTO> findAll(Pageable pageable) {
         Page<Crypto> result = repository.findAll(pageable);
-        return result.map(CryptoDTO::new);
+        CoinMarketCapDTO coinMarketCapDTO = coinMarketCapService.getData();
+        return result.map(c -> toDto(c, coinMarketCapDTO));
     }
 
     @Transactional
@@ -86,14 +91,13 @@ public class CryptoService {
 
     @Transactional
     private void copyDtoToEntity(CryptoDTO dto, Crypto entity) {
+        entity.setCryptoId(dto.getCryptoId());
         entity.setName(dto.getName());
+        entity.setSymbol(dto.getSymbol());
         entity.setDate(dto.getDate());
         entity.setDepositOrWithdraw(dto.getDepositOrWithdraw());
         entity.setCryptoValue(dto.getCryptoValue());
-        entity.setCurrentBalance(Utils.decimalFormat(calculateCurrentBalance(dto, 90000.0)));
         entity.setQuantity(calculateQuantity(dto));
-        entity.setProfit(Utils.decimalFormat(calculateProfit(dto, 90000.0)));
-        entity.setProfitPercentage(Utils.decimalFormat(calculateProfitPercentage(dto, 90000.0)));
         entity.setType(dto.getType());
         entity.setBrokerageFee(dto.getBrokerageFee());
 
@@ -101,28 +105,64 @@ public class CryptoService {
         entity.setPortfolio(portfolio);
     }
 
-    @Transactional(readOnly = true)
-    public List<CryptoMinDTO> getGroupedCryptoBalances(Long id) {
-        List<Crypto> allCryptos = repository.findByPortfolioId(id);
+    public CryptoDTO toDto(Crypto entity, CoinMarketCapDTO  coinMarketCapDTO) {
+        CryptoDTO dto = new CryptoDTO(entity);
 
-        Map<String, List<Crypto>> grouped = allCryptos.stream()
-                .collect(Collectors.groupingBy(Crypto::getName));
+        double quote = coinMarketCapService.getQuote(coinMarketCapDTO, entity.getCryptoId());
+        double currentBalance = calculateCurrentBalance(dto, quote);
+        double profit = calculateProfit(dto, quote);
+        double profitPercentage = calculateProfitPercentage(dto, quote);
+
+        dto.setQuote(quote);
+        dto.setCurrentBalance(currentBalance);
+        dto.setProfit(profit);
+        dto.setProfitPercentage(profitPercentage);
+
+        return dto;
+    }
+
+    private CryptoMinDTO toDto(List<Crypto> cryptos, Long cryptoId, CoinMarketCapDTO coinMarketCapDTO) {
+        String name = String.valueOf(cryptos.getFirst().getName());
+        String symbol = String.valueOf(cryptos.getFirst().getSymbol());
+        String logoUrl = String.valueOf(cryptos.getFirst().getLogoUrl());
+        double quote = coinMarketCapService.getQuote(coinMarketCapDTO, cryptoId);
+        double amountInvested = calculateAmountInvested(cryptos);
+        double quantity = calculateQuantity(cryptos);
+        double averagePrice = calculateAveragePrice(cryptos);
+        double currentBalance = calculateCurrentBalance(cryptos, coinMarketCapDTO);
+        double profit = calculateProfit(cryptos, amountInvested, coinMarketCapDTO);
+        double profitPercentage = calculateProfitPercentage(cryptos, amountInvested, coinMarketCapDTO);
+
+        CryptoMinDTO dto = new CryptoMinDTO();
+        dto.setCryptoId(cryptoId);
+        dto.setName(name);
+        dto.setSymbol(symbol);
+        dto.setLogoUrl(logoUrl);
+        dto.setQuote(quote);
+        dto.setAmountInvested(amountInvested);
+        dto.setQuantity(quantity);
+        dto.setAveragePrice(averagePrice);
+        dto.setCurrentBalance(currentBalance);
+        dto.setProfit(profit);
+        dto.setProfitPercentage(profitPercentage);
+
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public List<CryptoMinDTO> getGroupedCryptoBalances(Long portfolioId, CoinMarketCapDTO coinMarketCapDTO) {
+        List<Crypto> allCryptos = repository.findByPortfolioId(portfolioId);
+
+        Map<Long, List<Crypto>> grouped = allCryptos.stream()
+                .collect(Collectors.groupingBy(Crypto::getCryptoId));
 
         List<CryptoMinDTO> result = new ArrayList<>();
 
-        for (Map.Entry<String, List<Crypto>> entry : grouped.entrySet()) {
-            String name = entry.getKey();
+        for (Map.Entry<Long, List<Crypto>> entry : grouped.entrySet()) {
+            Long cryptoId = entry.getKey();
             List<Crypto> cryptos = entry.getValue();
 
-            CryptoMinDTO dto = new CryptoMinDTO();
-            dto.setName(name);
-            dto.setAmountInvested(Utils.decimalFormat(calculateAmountInvested(cryptos)));
-            dto.setCurrentBalance(Utils.decimalFormat(calculateCurrentBalance(cryptos)));
-            dto.setQuantity(calculateQuantity(cryptos));
-            dto.setAveragePrice(Utils.decimalFormat(calculateAveragePrice(cryptos)));
-            dto.setProfit(Utils.decimalFormat(calculateProfit(cryptos, dto.getAmountInvested())));
-            dto.setProfitPercentage(Utils.decimalFormat(calculateProfitPercentage(cryptos, dto.getAmountInvested())));
-
+            CryptoMinDTO dto = toDto(cryptos, cryptoId, coinMarketCapDTO);
             result.add(dto);
         }
 
@@ -156,56 +196,50 @@ public class CryptoService {
                 .sum();
     }
 
-    private double calculateCurrentBalance(CryptoDTO dto, double currentValue) {
+    private double calculateCurrentBalance(CryptoDTO dto, double quote) {
         double quantity = calculateQuantity(dto);
-
-        return quantity * currentValue;
+        return quantity * quote;
     }
 
-    private double calculateCurrentBalance(List<Crypto> cryptos) {
+    private double calculateCurrentBalance(List<Crypto> cryptos, CoinMarketCapDTO coinMarketCapDTO) {
         return cryptos.stream()
-                .mapToDouble(Crypto::getCurrentBalance)
+                .mapToDouble(c -> {
+                    double quote = coinMarketCapService.getQuote(coinMarketCapDTO, c.getCryptoId());
+                    double quantity = calculateQuantity(List.of(c));
+                    return quantity * quote;
+                })
                 .sum();
     }
 
-    private double calculateProfit(CryptoDTO dto, double currentValue) {
+    private double calculateProfit(CryptoDTO dto, double quote) {
         double quantity = calculateQuantity(dto);
-        if (dto.getType() == TransactionType.DEPOSIT) {
-            return (currentValue * quantity) - dto.getDepositOrWithdraw();
-        }
-        else {
-            return dto.getDepositOrWithdraw() - (dto.getCryptoValue() * Math.abs(quantity));
-        }
+        return quote * quantity - dto.getDepositOrWithdraw();
     }
 
-    private double calculateProfit(List<Crypto> cryptos, double amountInvested) {
-        double totalCurrentBalance = cryptos.stream()
-                .mapToDouble(Crypto::getCurrentBalance)
-                .sum();
-
+    private double calculateProfit(List<Crypto> cryptos, double amountInvested, CoinMarketCapDTO coinMarketCapDTO) {
+        double totalCurrentBalance = calculateCurrentBalance(cryptos, coinMarketCapDTO);
         return totalCurrentBalance - amountInvested;
     }
 
-    private double calculateProfitPercentage(CryptoDTO dto, double currentValue) {
-        double profit = calculateProfit(dto, currentValue);
+    private double calculateProfitPercentage(CryptoDTO dto, double quote) {
+        double profit = calculateProfit(dto, quote);
         double netAmount = calculateNetAmount(dto);
 
         if (netAmount == 0) {
-            return 0;
+            return 0.0;
         }
-        return (profit / netAmount) * 100;
+        return profit / netAmount * 100;
     }
 
-    private double calculateProfitPercentage(List<Crypto> cryptos, double amountInvested) {
-        if (amountInvested == 0) return 0.0;
+    private double calculateProfitPercentage(List<Crypto> cryptos, double amountInvested, CoinMarketCapDTO coinMarketCapDTO) {
+        if (amountInvested == 0) {
+            return 0.0;
+        }
 
-        double totalCurrentBalance = cryptos.stream()
-                .mapToDouble(Crypto::getCurrentBalance)
-                .sum();
-
+        double totalCurrentBalance = calculateCurrentBalance(cryptos, coinMarketCapDTO);
         double profit = totalCurrentBalance - amountInvested;
 
-        return (profit / amountInvested) * 100.0;
+        return profit / amountInvested * 100;
     }
 
     private double calculateAveragePrice(List<Crypto> cryptos) {

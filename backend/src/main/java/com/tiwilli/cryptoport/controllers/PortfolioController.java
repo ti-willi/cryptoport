@@ -1,8 +1,10 @@
 package com.tiwilli.cryptoport.controllers;
 
+import com.tiwilli.cryptoport.dto.CoinMarketCapDTO;
 import com.tiwilli.cryptoport.dto.CryptoDTO;
 import com.tiwilli.cryptoport.dto.CryptoMinDTO;
 import com.tiwilli.cryptoport.dto.PortfolioDTO;
+import com.tiwilli.cryptoport.services.CoinMarketCapService;
 import com.tiwilli.cryptoport.services.CryptoService;
 import com.tiwilli.cryptoport.services.PortfolioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,21 +27,25 @@ public class PortfolioController {
     @Autowired
     private CryptoService cryptoService;
 
+    @Autowired
+    private CoinMarketCapService coinMarketCapService;
+
     @GetMapping
-    public ResponseEntity<Page<PortfolioDTO>> findAll(Pageable pageable) {
-        Page<PortfolioDTO> list = service.findAll(pageable);
+    public ResponseEntity<List<PortfolioDTO>> findAll() {
+        List<PortfolioDTO> list = service.findAll(cryptoService);
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PortfolioDTO> findById(@PathVariable Long id) {
-        PortfolioDTO dto = service.findById(id);
+        PortfolioDTO dto = service.findById(id, cryptoService);
         return ResponseEntity.ok().body(dto);
     }
 
     @GetMapping("/{id}/cryptos")
     public ResponseEntity<List<CryptoMinDTO>> findByGropedCryptos(@PathVariable Long id) {
-        List<CryptoMinDTO> list = cryptoService.getGroupedCryptoBalances(id);
+        CoinMarketCapDTO coinMarketCapDTO = coinMarketCapService.getData();
+        List<CryptoMinDTO> list = cryptoService.getGroupedCryptoBalances(id, coinMarketCapDTO);
         return ResponseEntity.ok(list);
     }
 

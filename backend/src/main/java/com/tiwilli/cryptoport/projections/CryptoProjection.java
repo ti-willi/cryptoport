@@ -2,6 +2,7 @@ package com.tiwilli.cryptoport.projections;
 
 public interface CryptoProjection {
 
+    Long getCryptoId();
     String getName();
     Double getCryptoValue();
     Double getQuantity();

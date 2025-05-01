@@ -13,9 +13,6 @@ public class Portfolio {
     private Long id;
     private String name;
     private Double amountInvested;
-    private Double currentBalance;
-    private Double profit;
-    private Double profitPercentage;
 
     @OneToMany(mappedBy = "portfolio")
     private List<Crypto> cryptos = new ArrayList<>();
@@ -23,13 +20,10 @@ public class Portfolio {
     public Portfolio() {
     }
 
-    public Portfolio(Long id, String name, Double amountInvested, Double currentBalance, Double profit, Double profitPercentage) {
+    public Portfolio(Long id, String name, Double amountInvested) {
         this.id = id;
         this.name = name;
         this.amountInvested = amountInvested;
-        this.currentBalance = currentBalance;
-        this.profit = profit;
-        this.profitPercentage = profitPercentage;
     }
 
     public Long getId() {
@@ -54,30 +48,6 @@ public class Portfolio {
 
     public void setAmountInvested(Double amountInvested) {
         this.amountInvested = amountInvested;
-    }
-
-    public Double getCurrentBalance() {
-        return currentBalance;
-    }
-
-    public void setCurrentBalance(Double currentBalance) {
-        this.currentBalance = currentBalance;
-    }
-
-    public Double getProfit() {
-        return profit;
-    }
-
-    public void setProfit(Double profit) {
-        this.profit = profit;
-    }
-
-    public Double getProfitPercentage() {
-        return profitPercentage;
-    }
-
-    public void setProfitPercentage(Double profitPercentage) {
-        this.profitPercentage = profitPercentage;
     }
 
     public List<Crypto> getCryptos() {

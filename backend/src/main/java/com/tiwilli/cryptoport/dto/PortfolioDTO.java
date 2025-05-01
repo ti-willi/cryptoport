@@ -1,6 +1,8 @@
 package com.tiwilli.cryptoport.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.tiwilli.cryptoport.entities.Portfolio;
+import com.tiwilli.cryptoport.util.TwoDecimalSerializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +12,17 @@ public class PortfolioDTO {
 
     private Long id;
     private String name;
+
+    @JsonSerialize(using = TwoDecimalSerializer.class)
     private Double amountInvested;
+
+    @JsonSerialize(using = TwoDecimalSerializer.class)
     private Double currentBalance;
+
+    @JsonSerialize(using = TwoDecimalSerializer.class)
     private Double profit;
+
+    @JsonSerialize(using = TwoDecimalSerializer.class)
     private Double profitPercentage;
 
     private List<CryptoDTO> cryptos = new ArrayList<>();
@@ -33,9 +43,6 @@ public class PortfolioDTO {
         id = entity.getId();
         name = entity.getName();
         amountInvested = entity.getAmountInvested();
-        currentBalance = entity.getCurrentBalance();
-        profit = entity.getProfit();
-        profitPercentage = entity.getProfitPercentage();
         this.cryptos = entity.getCryptos().stream()
                 .map(CryptoDTO::new).collect(Collectors.toList());
     }
@@ -91,7 +98,6 @@ public class PortfolioDTO {
     public List<CryptoDTO> getCryptos() {
         return cryptos;
     }
-
 }
 
 

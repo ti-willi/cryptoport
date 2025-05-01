@@ -1,50 +1,57 @@
 package com.tiwilli.cryptoport.dto;
 
-import com.tiwilli.cryptoport.entities.Crypto;
-import com.tiwilli.cryptoport.projections.CryptoProjection;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.tiwilli.cryptoport.util.TwoDecimalSerializer;
 
 public class CryptoMinDTO {
 
+    private Long cryptoId;
     private String name;
-    private Double cryptoValue;
-    private Double amountInvested;
-    private Double currentBalance;
+    private String symbol;
+    private String logoUrl;
     private Double quantity;
+
+    @JsonSerialize(using = TwoDecimalSerializer.class)
+    private Double amountInvested;
+
+    @JsonSerialize(using = TwoDecimalSerializer.class)
+    private Double currentBalance;
+
+    @JsonSerialize(using = TwoDecimalSerializer.class)
     private Double averagePrice;
+
+    @JsonSerialize(using = TwoDecimalSerializer.class)
+    private Double quote;
+
+    @JsonSerialize(using = TwoDecimalSerializer.class)
     private Double profit;
+
+    @JsonSerialize(using = TwoDecimalSerializer.class)
     private Double profitPercentage;
 
     public CryptoMinDTO() {
     }
 
-    public CryptoMinDTO(String name, Double cryptoValue, Double amountInvested, Double currentBalance, Double quantity, Double averagePrice, Double profit, Double profitPercentage) {
+    public CryptoMinDTO(Long cryptoId, String name, String symbol, String logoUrl, Double quantity, Double amountInvested, Double currentBalance, Double averagePrice, Double quote, Double profit, Double profitPercentage) {
+        this.cryptoId = cryptoId;
         this.name = name;
-        this.cryptoValue = cryptoValue;
+        this.symbol = symbol;
+        this.logoUrl = logoUrl;
+        this.quantity = quantity;
         this.amountInvested = amountInvested;
         this.currentBalance = currentBalance;
-        this.quantity = quantity;
         this.averagePrice = averagePrice;
+        this.quote = quote;
         this.profit = profit;
         this.profitPercentage = profitPercentage;
     }
 
-    public CryptoMinDTO(Crypto entity) {
-        name = entity.getName();
-        currentBalance = entity.getCurrentBalance();
-        quantity = entity.getQuantity();
-        profit = entity.getProfit();
-        profitPercentage = entity.getProfitPercentage();
+    public Long getCryptoId() {
+        return cryptoId;
     }
 
-    public CryptoMinDTO(CryptoProjection projection) {
-        this.name = projection.getName();
-        this.cryptoValue = projection.getCryptoValue();
-        this.quantity = projection.getQuantity();
-        this.amountInvested = projection.getAmountInvested();
-        this.currentBalance = projection.getCurrentBalance();
-        this.averagePrice = projection.getAveragePrice();
-        this.profit = projection.getProfit();
-        this.profitPercentage = projection.getProfitPercentage();
+    public void setCryptoId(Long cryptoId) {
+        this.cryptoId = cryptoId;
     }
 
     public String getName() {
@@ -55,12 +62,28 @@ public class CryptoMinDTO {
         this.name = name;
     }
 
-    public Double getCryptoValue() {
-        return cryptoValue;
+    public String getSymbol() {
+        return symbol;
     }
 
-    public void setCryptoValue(Double cryptoValue) {
-        this.cryptoValue = cryptoValue;
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
+
+    public String getLogoUrl() {
+        return logoUrl;
+    }
+
+    public void setLogoUrl(String logoUrl) {
+        this.logoUrl = logoUrl;
+    }
+
+    public Double getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Double quantity) {
+        this.quantity = quantity;
     }
 
     public Double getAmountInvested() {
@@ -79,20 +102,20 @@ public class CryptoMinDTO {
         this.currentBalance = currentBalance;
     }
 
-    public Double getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Double quantity) {
-        this.quantity = quantity;
-    }
-
     public Double getAveragePrice() {
         return averagePrice;
     }
 
     public void setAveragePrice(Double averagePrice) {
         this.averagePrice = averagePrice;
+    }
+
+    public Double getQuote() {
+        return quote;
+    }
+
+    public void setQuote(Double quote) {
+        this.quote = quote;
     }
 
     public Double getProfit() {
@@ -110,5 +133,4 @@ public class CryptoMinDTO {
     public void setProfitPercentage(Double profitPercentage) {
         this.profitPercentage = profitPercentage;
     }
-
 }

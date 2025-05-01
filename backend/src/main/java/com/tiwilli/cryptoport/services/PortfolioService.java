@@ -1,25 +1,23 @@
 package com.tiwilli.cryptoport.services;
 
+import com.tiwilli.cryptoport.dto.CoinMarketCapDTO;
 import com.tiwilli.cryptoport.dto.CryptoDTO;
 import com.tiwilli.cryptoport.dto.PortfolioDTO;
-import com.tiwilli.cryptoport.entities.Crypto;
 import com.tiwilli.cryptoport.entities.Portfolio;
 import com.tiwilli.cryptoport.entities.enums.TransactionType;
 import com.tiwilli.cryptoport.repositories.CryptoRepository;
 import com.tiwilli.cryptoport.repositories.PortfolioRepository;
 import com.tiwilli.cryptoport.services.exceptions.DatabaseException;
 import com.tiwilli.cryptoport.services.exceptions.ResourceNotFoundException;
-import com.tiwilli.cryptoport.util.Utils;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -31,17 +29,43 @@ public class PortfolioService {
     @Autowired
     private CryptoRepository cryptoRepository;
 
+    @Autowired
+    private CoinMarketCapService coinMarketCapService;
+
     @Transactional(readOnly = true)
-    public PortfolioDTO findById(Long id) {
+    public PortfolioDTO findById(Long id, CryptoService cryptoService) {
         Portfolio portfolio = repository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Entity not found"));
-        return new PortfolioDTO(portfolio);
+
+        CoinMarketCapDTO coinMarketCapDTO = coinMarketCapService.getData();
+        PortfolioDTO dto = new PortfolioDTO(portfolio);
+
+        List<CryptoDTO> cryptoDTOS = portfolio.getCryptos().stream()
+                .map(c -> cryptoService.toDto(c, coinMarketCapDTO))
+                .toList();
+        setDTO(dto, cryptoDTOS);
+
+        return dto;
     }
 
     @Transactional(readOnly = true)
-    public Page<PortfolioDTO> findAll(Pageable pageable) {
-        Page<Portfolio> result = repository.findAll(pageable);
-        return result.map(PortfolioDTO::new);
+    public List<PortfolioDTO> findAll(CryptoService cryptoService) {
+        List<Portfolio> result = repository.findAll();
+        CoinMarketCapDTO coinMarketCapDTO = coinMarketCapService.getData();
+
+        return result.stream().map(
+                portfolio -> {
+                    PortfolioDTO dto = new PortfolioDTO(portfolio);
+
+                    List<CryptoDTO> cryptoDTOS = portfolio.getCryptos().stream()
+                            .map(crypto -> cryptoService.toDto(crypto, coinMarketCapDTO))
+                            .toList();
+
+                    setDTO(dto, cryptoDTOS);
+
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -83,17 +107,17 @@ public class PortfolioService {
         entity.setName(dto.getName());
     }
 
+    private void setDTO(PortfolioDTO dto, List<CryptoDTO> cryptoDTOS) {
+        dto.getCryptos().clear();
+        dto.getCryptos().addAll(cryptoDTOS);
+        dto.setCurrentBalance(calculateCurrentBalance(dto));
+        dto.setProfit(calculateProfit(dto));
+        dto.setProfitPercentage(calculateProfitPercentage(dto));
+    }
+
     public void updatePortfolio(Portfolio portfolio) {
         double amountInvested = calculateAmountInvested(portfolio);
-        double currentBalance = calculateCurrentBalance(portfolio);
-        double profit = calculateProfit(portfolio);
-        double profitPercentage = Utils.decimalFormat(calculateProfitPercentage(portfolio));
-
         portfolio.setAmountInvested(amountInvested);
-        portfolio.setCurrentBalance(currentBalance);
-        portfolio.setProfit(profit);
-        portfolio.setProfitPercentage(profitPercentage);
-
         repository.save(portfolio);
     }
 
@@ -105,25 +129,24 @@ public class PortfolioService {
                 .sum();
     }
 
-    private double calculateCurrentBalance(Portfolio portfolio) {
-        return portfolio.getCryptos().stream()
-                .mapToDouble(Crypto::getCurrentBalance)
+    private double calculateCurrentBalance(PortfolioDTO dto) {
+        return dto.getCryptos().stream()
+                .mapToDouble(CryptoDTO::getCurrentBalance)
                 .sum();
     }
 
-    private double calculateProfit(Portfolio portfolio) {
-        return portfolio.getCryptos().stream()
-                .mapToDouble(Crypto::getProfit)
+    private double calculateProfit(PortfolioDTO dto) {
+        return dto.getCryptos().stream()
+                .mapToDouble(CryptoDTO::getProfit)
                 .sum();
     }
 
-    private double calculateProfitPercentage(Portfolio portfolio) {
-        double amountInvested = Optional.ofNullable(portfolio.getAmountInvested())
-                .orElse(0.0);
+    private double calculateProfitPercentage(PortfolioDTO dto) {
+        double amountInvested = dto.getAmountInvested();
         if (amountInvested == 0) {
             return 0.0;
         }
-        return portfolio.getProfit() / portfolio.getAmountInvested() * 100;
+        return dto.getProfit() / dto.getAmountInvested() * 100;
     }
 
  }
